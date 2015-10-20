@@ -6,7 +6,7 @@
 
 class ALRU : private page_swap_algorithm {
 public:
-    size_t operator(const string &fname);
+    size_t operator()(const std::string &fname);
 };
 
 #endif

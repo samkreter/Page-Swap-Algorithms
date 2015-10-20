@@ -10,7 +10,8 @@
 #include <array> // This is actually the first time I've every used this
 // Missing things?
 #include <exception>
-#include <new>
+#include <stdexcept>
+#include <iostream>
 
 extern "C" { // C library, no name mangling
 #include <block_store.h>
@@ -22,9 +23,9 @@ private:
     void init_backing_store();
 protected:
 
-    using page_entry_total = 2048;
-    using frame_entry_total = 512;
-    using frame_size = 1024;
+    static const uint32_t page_entry_total = 2048;
+    static const uint32_t frame_entry_total = 512;
+    static const uint32_t frame_size = 1024;
 
     using page_entry = struct {
         // TODO: FILL THIS IN.
@@ -41,7 +42,7 @@ protected:
         uint32_t page_requested;
         uint32_t frame_replaced;
         uint32_t page_replaced;
-    }
+    };
 
     std::array<page_entry, page_entry_total> page_table;
     std::array<frame_entry, frame_entry_total> frame_table;

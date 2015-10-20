@@ -2,5 +2,5 @@
 
 
 size_t ALRU::operator()(const std::string &fname) {
-    return 0;
+    throw std::runtime_error("NOT FINISHED");
 }

@@ -2,5 +2,5 @@
 
 
 size_t LRU::operator()(const std::string &fname) {
-    return 0;
+    throw std::runtime_error("NOT FINISHED");
 }

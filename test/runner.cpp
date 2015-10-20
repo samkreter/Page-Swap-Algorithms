@@ -7,7 +7,7 @@
 int main(int argc, char **argv) {
 
     if (argc < 2) {
-        std::cerr << "Not enough parameters!\nUSAGE: " << agrv[0] << " request_file" << std::endl;
+        std::cerr << "Not enough parameters!\nUSAGE: " << argv[0] << " request_file" << std::endl;
         return -1;
     }
 
@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
         uint32_t total_faults = lru_test(fname);
 
         std::cout << "LRU COMPLETE, " << total_faults << " TOTAL PAGE FAULTS." << std::endl;
-    } catch (std::exception e) {
-    	std::cerr<<"Something broke! "<<e.what()<<std::endl;
+    } catch (std::exception &e) {
+        std::cerr << "Something broke! " << e.what() << std::endl;
     }
 
 
@@ -34,8 +34,8 @@ int main(int argc, char **argv) {
         uint32_t total_faults = alru_test(fname);
 
         std::cout << "ALRU COMPLETE, " << total_faults << " TOTAL PAGE FAULTS." << std::endl;
-    } catch (std::exception e) {
-    	std::cerr<<"Something broke! "<<e.what()<<std::endl;
+    } catch (std::exception &e) {
+        std::cerr << "Something broke! " << e.what() << std::endl;
     }
 
     return 0;
