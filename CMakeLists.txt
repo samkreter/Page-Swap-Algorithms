@@ -5,8 +5,6 @@ set(CMAKE_CXX_FLAGS "--std=c++11 -g -Werror")
 
 find_library(blockstore_lib block_store)
 
-message("AHHHHHHH " ${blockstore_lib})
-
 add_executable(runner test/runner.cpp)
 target_link_libraries(runner ${blockstore_lib})
 

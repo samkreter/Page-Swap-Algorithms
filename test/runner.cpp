@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
     try {
         std::cout << "INIT LRU" << std::endl;
-        LRU lru_test();
+        LRU lru_test;
 
         std::cout << "RUNNING LRU" << std::endl;
         uint32_t total_faults = lru_test(fname);
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
     try {
         std::cout << "INIT ALRU" << std::endl;
-        ALRU alru_test();
+        ALRU alru_test;
 
         std::cout << "RUNNING ALRU" << std::endl;
         uint32_t total_faults = alru_test(fname);
