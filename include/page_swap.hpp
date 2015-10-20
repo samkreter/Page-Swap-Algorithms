@@ -1,59 +1,62 @@
-#ifndef _PAGE_SWAP_H_
-#define _PAGE_SWAP_H_
+#ifndef PAGE_SWAP_HPP__
+#define PAGE_SWAP_HPP__
 
-#include <stdbool.h>
+#include <cstdint>
+#include <vector>
+//#include <list> // ?
+//#include <unistd.h>
+//#include <fcntl.h>
+#include <fstream>
+#include <array> // This is actually the first time I've every used this
+// Missing things?
+#include <exception>
+#include <new>
 
-#define MAX_PAGE_TABLE_ENTRIES_SIZE 2048
-#define MAX_PHYSICAL_MEMORY_SIZE 512
-
-typedef struct {
-	unsigned int pageTableIdx;
-	unsigned char data[1024];
-	unsigned char accessTrackingByte;
-	unsigned char accessBit;
-}Frame_t;
-
-typedef struct {
-	Frame_t entries[MAX_PHYSICAL_MEMORY_SIZE];
-	unsigned int size;
-}FrameTable_t;
+extern "C" { // C library, no name mangling
+#include <block_store.h>
+}
 
 
-// TODO CREATE A Page_t Structure
+class page_swap_algorithm {
+private:
+    void init_backing_store();
+protected:
 
-typedef struct {
-	// TODO COMPLETE THIS STRUCTURE
-	// An array of pages
-	// Number of Page entires
+    using page_entry_total = 2048;
+    using frame_entry_total = 512;
+    using frame_size = 1024;
 
-}PageTable_t;
+    using page_entry = struct {
+        // TODO: FILL THIS IN.
+    };
 
+    using frame_entry = struct {
+        uint32_t page_table_idx;
+        uint8_t data[frame_size];
+        uint8_t tracking_byte;
+        bool access_bit;
+    };
 
-typedef struct {
-	unsigned short pageRequested;
-	unsigned short frameReplaced;
-	unsigned short pageReplaced;
-}PageAlgorithmResults;
+    using page_algorithm_results = struct {
+        uint32_t page_requested;
+        uint32_t frame_replaced;
+        uint32_t page_replaced;
+    }
 
+    std::array<page_entry, page_entry_total> page_table;
+    std::array<frame_entry, frame_entry_total> frame_table;
+    block_store_t *backing_store;
 
-bool initialize_back_store (void);
+    void fault_printer(const uint32_t request,const uint32_t frame_replaced,const uint32_t page_replaced);
 
-void destroy_back_store(void);
+    bool read_from_back_store(/* ??? */);
+    bool write_to_back_store(/* ??? */);
+    std::vector<uint32_t> read_page_requests(const std::string &fname);
 
-bool initailize_frame_list(void);
-
-void destroy_frame_list(void);
-
-PageAlgorithmResults* least_recently_used(const uint32_t pageNumber);
-
-PageAlgorithmResults* approx_least_recently_used (const uint32_t pageNumber, const size_t timeInterval);
-
-bool read_from_back_store (/*?????? TODO: add your parameters*/);
-
-bool write_to_back_store (/*???? TODO: add your parameters*/);
-
-dyn_array_t* read_page_requests (const char* const filename);
-
-bool initialize (void); 
+public:
+    page_swap_algorithm(); // do your frame and page table init here
+    ~page_swap_algorithm();
+    virtual size_t operator()(const std::string &fname) = 0;
+};
 
 #endif
