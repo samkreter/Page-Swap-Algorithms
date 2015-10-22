@@ -1,4 +1,3 @@
-# OSF15_Exercise3
-Exercise 3!
+# Page Swap Algorithms
 
-Implement the required functions, or their C++ equivalent, in the Exercise 3 document
+Working with implementing different page swap algorithms
