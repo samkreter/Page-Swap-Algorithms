@@ -2,5 +2,7 @@
 
 
 size_t LRU::operator()(const std::string &fname) {
-    throw std::runtime_error("NOT FINISHED");
+   // read_page_requests(fname);
+
+ 	return 0;
 }
