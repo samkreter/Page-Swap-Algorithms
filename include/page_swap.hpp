@@ -51,7 +51,7 @@ protected:
 
     void fault_printer(const uint32_t request,const uint32_t frame_replaced,const uint32_t page_replaced);
 
-    bool read_from_back_store(/* ??? */);
+    bool read_from_back_store(uint8_t* buffer, uint32_t pageId);
     bool write_to_back_store(/* ??? */);
     std::vector<uint32_t> read_page_requests(const std::string &fname);
 
