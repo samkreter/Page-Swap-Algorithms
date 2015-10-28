@@ -28,14 +28,15 @@ protected:
     static const uint32_t frame_size = 1024;
 
     using page_entry = struct {
-        // TODO: FILL THIS IN.
+       uint32_t idx;
+       bool valid;
     };
 
     using frame_entry = struct {
         uint32_t page_table_idx;
         uint8_t data[frame_size];
         uint8_t tracking_byte;
-        bool access_bit;
+        uint8_t access_bit;
     };
 
     using page_algorithm_results = struct {

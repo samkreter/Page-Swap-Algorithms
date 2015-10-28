@@ -2,7 +2,7 @@
 
 page_swap_algorithm::page_swap_algorithm() {
     init_backing_store();
-
+    
     // TODO: initialize and fill frame/page tables
     throw std::runtime_error("constructor INCOMEPLETE");
 }
@@ -34,5 +34,32 @@ bool page_swap_algorithm::write_to_back_store(/*???? TODO: add your parameters*/
 
 
 std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string &fname) {
-    throw std::runtime_error("read_page_requests INCOMEPLETE");
+    if(fname){
+
+        const int fd = open(fname,O_RDONLY);
+
+        if (fd >= 0) {
+            
+            std::vector<uint32_t> pRequests;
+            uint32_t numBlocks;
+            
+            if(read(fd,&numBlocks,sizeof(uint32_t)) == sizeof(uint32_t)){
+                
+                for(int i = 0;i < numBlocks; i++){
+                    
+                    uint32_t* buffer = (uint32_t*)malloc(sizeof(uint32_t));
+                    
+                    if(read(fd,buffer,sizeof(uint32_t)) != sizeof(uint32_t)){
+                        throw std::runtime_error(std::string("failed to read request ").append(i))
+                    }
+                    pRequests.push_back(buffer);
+                }
+                return pRequests;
+                
+            }
+            throw std::runtime_error("could not read number of blocks");
+        }
+        throw std::runtime_error("could not open file");
+    }
+    throw std::runtime_error("Bad Params bro");
 }
