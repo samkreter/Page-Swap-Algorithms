@@ -2,7 +2,20 @@
 
 page_swap_algorithm::page_swap_algorithm() {
     init_backing_store();
-    
+    uint32_t tempFrameIdCounter = 0;
+    uint32_t tempPageIdCount = 0;
+
+    for( auto page : page_table){
+        page.idx = tempPageIdCount++;
+        page.valid = bool;
+    }
+
+    for( auto frame : frame_table){
+        frame.page_table_idx = tempFrameIdCounter++;
+        frame.data 
+        frame.tracking_byte = 0;
+        frame.access_bit = 0;
+    }
     // TODO: initialize and fill frame/page tables
     throw std::runtime_error("constructor INCOMEPLETE");
 }
