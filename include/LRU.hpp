@@ -5,6 +5,8 @@
 
 
 class LRU : private page_swap_algorithm {
+private: 
+	vector< pageRequests;
 public:
     size_t operator()(const std::string &fname);
 };
