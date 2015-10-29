@@ -3,30 +3,39 @@
 page_swap_algorithm::page_swap_algorithm() {
     //create the block store
     init_backing_store();
+    
     //set temp vars, couldve done this with one but you know it looks more cool with 
     //long var names
     uint32_t tempFrameIdCounter = 0;
     uint32_t tempPageIdCount = 0;
 
+
     //init the page table setting the id and setting vaild to true
     for( auto& page : page_table){
         page.idx = tempPageIdCount++;
         page.valid = true;
-        size_t temp;
         //allocate a block for each page that we have
-        temp = block_store_allocate(backing_store);
-        if(temp == 0){
+        if(block_store_allocate(backing_store) == 0){
+            //I tried adding the whon whon sound from mario for all the exceptions
+            // but it broke...so i took it out
             throw std::runtime_error("Error when allocating blockstore block");
         }
-        uint8_t buffer = 1;
-        if(!write_to_back_store(&buffer,page.idx)){
+
+        //init the block to array of @ signs using hex... 
+        //yea I finally learned hex to acii :)
+        uint8_t buffer[frame_size] = {0x40};
+
+        if(!write_to_back_store(buffer,page.idx)){
             throw std::runtime_error("Error while writing to backstore");
         }
     }
 
     //init the frame table and reading from the blockstore for the data 
     for( auto& frame : frame_table){
+        //initialize the pageId for the frame
         frame.page_table_idx = tempFrameIdCounter++;
+       
+        //read data from backing store into each frame's data
         if(!read_from_back_store(frame.data, frame.page_table_idx)){
             throw std::runtime_error("Could not read from backing store when initilizing frame table");
         }
@@ -53,42 +62,53 @@ void page_swap_algorithm::fault_printer(const uint32_t request, const uint32_t f
 
 
 bool page_swap_algorithm::read_from_back_store(uint8_t *buffer, uint32_t pageId) {
-    //I'm just going to hard code the block size value for reading the entire block...yep best practices
-    //also since i'll always be reading in the entire block, another great hardcode
-    if(block_store_read(backing_store,pageId+8,buffer,8,0)){
-        return true;
+    //param check
+    if(buffer && pageId >= 0){
+        //I'm just going to hard code the block size value for reading the entire block...yep best practices
+        //also since i'll always be reading in the entire block, another great hardcode
+        if(block_store_read(backing_store,pageId+8,buffer,frame_size,0)){
+            return true;
+        }
+        return false;
     }
     return false;
 
 }
 
 bool page_swap_algorithm::write_to_back_store(uint8_t *buffer, uint32_t pageId) {
-    if(block_store_write(backing_store,pageId+8,buffer,8,0)){
-        return true;
+    //params check
+    if(buffer && pageId >= 0){
+        //have to add 8 to pageid to account for begining in the backing store
+        if(block_store_write(backing_store,pageId+8,buffer,frame_size,0)){
+            return true;
+        }
+        return false;
     }
     return false;
 }
 
 
 std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string &fname) {
+    //check string isn't null
     if(!fname.empty()){
-
+        //get file descriptor for bin file
         const int fd = open(fname.c_str(),O_RDONLY);
-
+        //check file was opened correctly 
         if (fd >= 0) {
-            
+            //init vecotre to hold the page requests
             std::vector<uint32_t> pRequests;
-            uint32_t numBlocks;
-            
-            if(read(fd,&numBlocks,sizeof(uint32_t)) == sizeof(uint32_t)){
+            uint32_t numRequests;
+            //try to read in the number of Requests in the file 
+            if(read(fd,&numRequests,sizeof(uint32_t)) == sizeof(uint32_t)){
                 
-                uint32_t* buffer = (uint32_t*)malloc(sizeof(uint32_t));
-                for(uint32_t i = 0;i < numBlocks; i++){
-                    *buffer = 0;
-                    if(read(fd,buffer,sizeof(uint32_t)) != sizeof(uint32_t)){
+                uint32_t buffer;
+                for(uint32_t i = 0;i < numRequests; i++){
+                    //init buffer to zero each time
+                    buffer = 0;
+                    if(read(fd,&buffer,sizeof(uint32_t)) != sizeof(uint32_t)){
                         throw std::runtime_error(std::string("failed to read request "));
                     }
-                    pRequests.push_back(*buffer);
+                    pRequests.push_back(buffer);
                 }
                 int counter = 0;
                 for ( auto test : pRequests){
