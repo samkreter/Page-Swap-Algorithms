@@ -108,15 +108,8 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
                     if(read(fd,&buffer,sizeof(uint32_t)) != sizeof(uint32_t)){
                         throw std::runtime_error(std::string("failed to read request "));
                     }
+                    //add the request from the file onto the vector
                     pRequests.push_back(buffer);
-                }
-                int counter = 0;
-                for ( auto test : pRequests){
-                    std::cout<<test<<" ";
-                    if(counter > 10){
-                        break;
-                    }
-                    counter++;
                 }
 
                 return pRequests;
