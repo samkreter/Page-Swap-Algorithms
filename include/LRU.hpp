@@ -5,8 +5,9 @@
 
 
 class LRU : private page_swap_algorithm {
-private: 
-	vector< pageRequests;
+private:
+    //stores the least recently used frames
+	vector<uint32_t> lsuTable;
 public:
     size_t operator()(const std::string &fname);
 };
