@@ -12,12 +12,24 @@ page_swap_algorithm::page_swap_algorithm() {
     for( auto& page : page_table){
         page.idx = tempPageIdCount++;
         page.valid = true;
+        size_t temp;
+        //allocate a block for each page that we have
+        temp = block_store_allocate(backing_store);
+        if(temp == 0){
+            throw std::runtime_error("Error when allocating blockstore block");
+        }
+        uint8_t buffer = 1;
+        if(!write_to_back_store(&buffer,page.idx)){
+            throw std::runtime_error("Error while writing to backstore");
+        }
     }
 
     //init the frame table and reading from the blockstore for the data 
     for( auto& frame : frame_table){
         frame.page_table_idx = tempFrameIdCounter++;
-        read_from_back_store(frame.data, frame.page_table_idx);
+        if(!read_from_back_store(frame.data, frame.page_table_idx)){
+            throw std::runtime_error("Could not read from backing store when initilizing frame table");
+        }
         frame.tracking_byte = 0;
         frame.access_bit = 0;
     }
@@ -43,15 +55,18 @@ void page_swap_algorithm::fault_printer(const uint32_t request, const uint32_t f
 bool page_swap_algorithm::read_from_back_store(uint8_t *buffer, uint32_t pageId) {
     //I'm just going to hard code the block size value for reading the entire block...yep best practices
     //also since i'll always be reading in the entire block, another great hardcode
-    if(block_store_read(backing_store,pageId,buffer,1024,0)){
+    if(block_store_read(backing_store,pageId+8,buffer,8,0)){
         return true;
     }
     return false;
 
 }
 
-bool page_swap_algorithm::write_to_back_store(/*???? TODO: add your parameters*/) {
-    throw std::runtime_error("write_to_back_store INCOMEPLETE");
+bool page_swap_algorithm::write_to_back_store(uint8_t *buffer, uint32_t pageId) {
+    if(block_store_write(backing_store,pageId+8,buffer,8,0)){
+        return true;
+    }
+    return false;
 }
 
 
