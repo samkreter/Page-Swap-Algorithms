@@ -111,7 +111,7 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
                     //add the request from the file onto the vector
                     pRequests.push_back(buffer);
                 }
-                std::cout<<pRequests.size();
+
                 return pRequests;
                 
             }

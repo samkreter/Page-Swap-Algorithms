@@ -3,11 +3,12 @@
 
 #include <cstdint>
 #include <vector>
-//#include <list> // ?
+#include <list> // yea, I liked vectors better but we these are cool sometimes I guess
+#include <algorithm> //I really like the find method 
 //#include <unistd.h>
 //#include <fcntl.h>
 #include <fstream>
-#include <array> // This is actually the first time I've every used this
+#include <array> // This is actually the first time I've every used this, but its pretty cool
 // Missing things?
 #include <exception>
 #include <stdexcept>
