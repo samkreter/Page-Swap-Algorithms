@@ -16,7 +16,6 @@ size_t LRU::operator()(const std::string &fname) {
 	    	auto pageIndex = std::find(lsuTable.begin(),lsuTable.end(),request);
 	    	// //we find it so no page fault, move to most recently used
 	    	if(pageIndex != lsuTable.end()){
-	    		std::cout<<"yea"<<std::endl;
 	    		lsuTable.splice(lsuTable.end(),lsuTable,pageIndex);
 	    	}
 	    	//we had a page fault
@@ -48,14 +47,14 @@ size_t LRU::operator()(const std::string &fname) {
 	    			newId = (*pagePos).idx;
 	    			(*frame).page_table_idx = newId;
 	    			//read data from backing store
-	    			// if(!read_from_back_store((*frame).data, (*frame).page_table_idx)){
-        //     			throw std::runtime_error("Could not read from backing store during page fault");
-        		}
+	    			if(!read_from_back_store((*frame).data, (*frame).page_table_idx)){
+            			throw std::runtime_error("Could not read from backing store during page fault");
+        			}
 
         			//moved the newly updated from front to the back since it was used
         			lsuTable.erase(lsuTable.begin());
         			lsuTable.push_back(newId);
-	    		// }
+	    		}
 
 	    	}
 	    	//incrememnt clock
