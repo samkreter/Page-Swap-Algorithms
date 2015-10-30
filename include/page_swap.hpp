@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <list> // yea, I liked vectors better but we these are cool sometimes I guess
-#include <algorithm> //I really like the find method 
+#include <algorithm> //I really like the find method
 //#include <unistd.h>
 //#include <fcntl.h>
 #include <fstream>
@@ -51,7 +51,7 @@ protected:
     block_store_t *backing_store;
 
     void fault_printer(const uint32_t request,const uint32_t frame_replaced,const uint32_t page_replaced);
-
+    void handlePageFault(void (*extraWork)(uint32_t request,void* holdingStruc));
     bool read_from_back_store(uint8_t* buffer, uint32_t pageId);
     bool write_to_back_store(uint8_t *buffer, uint32_t pageId);
     std::vector<uint32_t> read_page_requests(const std::string &fname);

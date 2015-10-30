@@ -21,38 +21,11 @@ size_t LRU::operator()(const std::string &fname) {
 	    		//increment faults tacker
 	    		faults++;
 
-	    		//get page from page table to find
-	    		auto pagePos = std::find_if(page_table.begin(),page_table.end(),[request] (const page_entry& page){
-	    		 return page.idx == request;
-	    		});
-
-	    		if(pagePos == page_table.end()){
-	    			throw std::runtime_error("Page requested not in page table...Damn thats not good");
-	    		}
-
-	    		//had to have it out of the scope to get it later
-	    		uint32_t newId;
-	    		if((*pagePos).valid){
-	    			uint32_t tempId = *lsuTable.begin();
-	    			//get front because its the last one accessed
-	    			auto frame = std::find_if(frame_table.begin(),frame_table.end(),[tempId](const frame_entry& frame){
-	    				return frame.page_table_idx == tempId;
-	    			});
-	    			if(frame == frame_table.end()){
-	    				throw std::runtime_error("Page Id not found in frame table, does not make since man");
-	    			}
-
-	    			newId = (*pagePos).idx;
-	    			(*frame).page_table_idx = newId;
-	    			//read data from backing store
-	    			if(!read_from_back_store((*frame).data, (*frame).page_table_idx)){
-            			throw std::runtime_error("Could not read from backing store during page fault");
-        			}
-
-        			//moved the newly updated from front to the back since it was used
-        			lsuTable.erase(lsuTable.begin());
-        			lsuTable.push_back(newId);
-	    		}
+                handlePageFault([](request,lsuTable){
+                    //moved the newly updated from front to the back since it was used
+                    lsuTable->erase(lsuTable.begin());
+                    lsuTable->push_back(newId);
+                });
 
 	    	}
 	    }
@@ -69,3 +42,6 @@ void LRU::initlruTable(){
     	lsuTable.push_front(frame.page_table_idx);
     }
 }
+
+
+

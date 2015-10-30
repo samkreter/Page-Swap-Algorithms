@@ -3,8 +3,8 @@
 page_swap_algorithm::page_swap_algorithm() {
     //create the block store
     init_backing_store();
-    
-    //set temp vars, couldve done this with one but you know it looks more cool with 
+
+    //set temp vars, couldve done this with one but you know it looks more cool with
     //long var names
     uint32_t tempFrameIdCounter = 0;
     uint32_t tempPageIdCount = 0;
@@ -21,7 +21,7 @@ page_swap_algorithm::page_swap_algorithm() {
             throw std::runtime_error("Error when allocating blockstore block");
         }
 
-        //init the block to array of @ signs using hex... 
+        //init the block to array of @ signs using hex...
         //yea I finally learned hex to acii :)
         uint8_t buffer[frame_size] = {0x40};
 
@@ -30,11 +30,11 @@ page_swap_algorithm::page_swap_algorithm() {
         }
     }
 
-    //init the frame table and reading from the blockstore for the data 
+    //init the frame table and reading from the blockstore for the data
     for( auto& frame : frame_table){
         //initialize the pageId for the frame
         frame.page_table_idx = tempFrameIdCounter++;
-       
+
         //read data from backing store into each frame's data
         if(!read_from_back_store(frame.data, frame.page_table_idx)){
             throw std::runtime_error("Could not read from backing store when initilizing frame table");
@@ -93,14 +93,14 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
     if(!fname.empty()){
         //get file descriptor for bin file
         const int fd = open(fname.c_str(),O_RDONLY);
-        //check file was opened correctly 
+        //check file was opened correctly
         if (fd >= 0) {
             //init vecotre to hold the page requests
             std::vector<uint32_t> pRequests;
             uint32_t numRequests;
-            //try to read in the number of Requests in the file 
+            //try to read in the number of Requests in the file
             if(read(fd,&numRequests,sizeof(uint32_t)) == sizeof(uint32_t)){
-                
+
                 uint32_t buffer;
                 for(uint32_t i = 0;i < numRequests; i++){
                     //init buffer to zero each time
@@ -113,7 +113,7 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
                 }
 
                 return pRequests;
-                
+
             }
             throw std::runtime_error("could not read number of blocks");
         }
@@ -121,3 +121,36 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
     }
     throw std::runtime_error("Bad Params bro");
 }
+
+void page_swap_algorithm::handlePageFault(void (*extraWork)(uint32_t request,void* holdingStruc)){
+    //get page from page table to find
+    auto pagePos = std::find_if(page_table.begin(),page_table.end(),[request] (const page_entry& page){
+     return page.idx == request;
+    });
+
+    if(pagePos == page_table.end()){
+        throw std::runtime_error("Page requested not in page table...Damn thats not good");
+    }
+
+    //had to have it out of the scope to get it later
+    uint32_t newId;
+    if((*pagePos).valid){
+        uint32_t tempId = *lsuTable.begin();
+        //get front because its the last one accessed
+        auto frame = std::find_if(frame_table.begin(),frame_table.end(),[tempId](const frame_entry& frame){
+            return frame.page_table_idx == tempId;
+        });
+        if(frame == frame_table.end()){
+            throw std::runtime_error("Page Id not found in frame table, does not make since man");
+        }
+
+        newId = (*pagePos).idx;
+        (*frame).page_table_idx = newId;
+        //read data from backing store
+        if(!read_from_back_store((*frame).data, (*frame).page_table_idx)){
+            throw std::runtime_error("Could not read from backing store during page fault");
+        }
+
+    }
+}
+
