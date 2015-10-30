@@ -7,8 +7,6 @@ size_t LRU::operator()(const std::string &fname) {
 	   	auto pageRequests = read_page_requests(fname);
 	    //set up the tracking list with the current frames;
 	    initlruTable();
-	    //set the virtual clock to track the time
-	    uint Vclock = 0;
 	    //the number of page faults
 	    size_t faults = 0;
 
@@ -23,11 +21,11 @@ size_t LRU::operator()(const std::string &fname) {
 	    		//increment faults tacker
 	    		faults++;
 
-	    		//get page from page table to find 
+	    		//get page from page table to find
 	    		auto pagePos = std::find_if(page_table.begin(),page_table.end(),[request] (const page_entry& page){
-	    		 return page.idx == request; 
+	    		 return page.idx == request;
 	    		});
-	    	
+
 	    		if(pagePos == page_table.end()){
 	    			throw std::runtime_error("Page requested not in page table...Damn thats not good");
 	    		}
@@ -36,7 +34,7 @@ size_t LRU::operator()(const std::string &fname) {
 	    		uint32_t newId;
 	    		if((*pagePos).valid){
 	    			uint32_t tempId = *lsuTable.begin();
-	    			//get front because its the last one accessed 
+	    			//get front because its the last one accessed
 	    			auto frame = std::find_if(frame_table.begin(),frame_table.end(),[tempId](const frame_entry& frame){
 	    				return frame.page_table_idx == tempId;
 	    			});
@@ -57,8 +55,6 @@ size_t LRU::operator()(const std::string &fname) {
 	    		}
 
 	    	}
-	    	//incrememnt clock
-	    	Vclock++;
 	    }
 
 
