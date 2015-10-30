@@ -16,6 +16,7 @@ size_t LRU::operator()(const std::string &fname) {
 	    	auto pageIndex = std::find(lsuTable.begin(),lsuTable.end(),request);
 	    	// //we find it so no page fault, move to most recently used
 	    	if(pageIndex != lsuTable.end()){
+	    		std::cout<<"yea"<<std::endl;
 	    		lsuTable.splice(lsuTable.end(),lsuTable,pageIndex);
 	    	}
 	    	//we had a page fault
@@ -31,22 +32,30 @@ size_t LRU::operator()(const std::string &fname) {
 	    		if(pagePos == page_table.end()){
 	    			throw std::runtime_error("Page requested not in page table...Damn thats not good");
 	    		}
-	    		bool valid = (*pagePos).vaild;
-	    		if(vaild){
+
+	    		//had to have it out of the scope to get it later
+	    		uint32_t newId;
+	    		if((*pagePos).valid){
 	    			uint32_t tempId = *lsuTable.begin();
 	    			//get front because its the last one accessed 
 	    			auto frame = std::find_if(frame_table.begin(),frame_table.end(),[tempId](const frame_entry& frame){
 	    				return frame.page_table_idx == tempId;
 	    			});
-	    			(*frame).page_table_idx = (*pagePos).idx;
+	    			if(frame == frame_table.end()){
+	    				throw std::runtime_error("Page Id not found in frame table, does not make since man");
+	    			}
+
+	    			newId = (*pagePos).idx;
+	    			(*frame).page_table_idx = newId;
 	    			//read data from backing store
-	    			if(!read_from_back_store((*frame).data, (*frame).page_table_idx)){
-            			throw std::runtime_error("Could not read from backing store during page fault");
-        			}
+	    			// if(!read_from_back_store((*frame).data, (*frame).page_table_idx)){
+        //     			throw std::runtime_error("Could not read from backing store during page fault");
+        		}
 
         			//moved the newly updated from front to the back since it was used
-        			lsuTable.splice(lsuTable.end(),lsuTable,lsuTable.begin());
-	    		}
+        			lsuTable.erase(lsuTable.begin());
+        			lsuTable.push_back(newId);
+	    		// }
 
 	    	}
 	    	//incrememnt clock
