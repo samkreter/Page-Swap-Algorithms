@@ -14,7 +14,6 @@ size_t LRU::operator()(const std::string &fname) {
 	    size_t faults = 0;
 
 	    for( auto request : pageRequests){
-	    	requests++;
 	    	//check if request is in the frame table bases off the lru table
             //since it will be faster to search
             auto pageIndex = std::find(lsuTable.begin(),lsuTable.end(),request);

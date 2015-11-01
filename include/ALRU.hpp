@@ -5,6 +5,9 @@
 
 
 class ALRU : private page_swap_algorithm {
+private:
+	void adjustTrackingBit();
+	uint32_t argMin();
 public:
     size_t operator()(const std::string &fname);
 };
