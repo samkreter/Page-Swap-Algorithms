@@ -30,7 +30,7 @@ protected:
 
     using page_entry = struct {
        uint32_t idx;
-       uint32_t frameid;
+       uint32_t frameId;
        bool valid;
     };
 

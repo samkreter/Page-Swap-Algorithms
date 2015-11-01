@@ -14,6 +14,7 @@ size_t LRU::operator()(const std::string &fname) {
 	    size_t faults = 0;
 
 	    for( auto request : pageRequests){
+	    	requests++;
 	    	//check if request is in the frame table bases off the lru table
             //since it will be faster to search
             auto pageIndex = std::find(lsuTable.begin(),lsuTable.end(),request);
@@ -31,7 +32,7 @@ size_t LRU::operator()(const std::string &fname) {
                 if(*(lsuTable.begin()) > page_table.size() || request > page_table.size()){
                     throw std::runtime_error("Something doesn't match up in the page table");
                 }
-	    		auto& pageToRemove = page_table[*(lsuTable.begin())]
+	    		auto& pageToRemove = page_table[*(lsuTable.begin())];
                 pageToRemove.valid = false;
                 uint32_t frameToRemoveId = pageToRemove.frameId;
 
@@ -61,7 +62,6 @@ size_t LRU::operator()(const std::string &fname) {
 
 	    	}
 	    }
-
 
  		return faults;
 	}
