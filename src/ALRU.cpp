@@ -10,6 +10,7 @@ size_t ALRU::operator()(const std::string &fname) {
         size_t Vclock = 0;
         size_t faults = 0;
         size_t requests = 0;
+        //int counter = 0;
 
         for(auto request : pageRequests){
             requests++;
@@ -31,8 +32,15 @@ size_t ALRU::operator()(const std::string &fname) {
 
                 //increment faults tacker
 	    		faults++;
-
+	    		
 	    		uint32_t frameToRemoveId = argMin();
+	    		// if(frameToRemoveId == 0){
+	    		// 	counter++;
+	    		// 	if(counter > 500){
+	    		// 		throw std::runtime_error("mess up");
+	    		// 	}
+	    			
+	    		// }
 	    		//get the frame to be removed
 	    		auto& frame = frame_table[frameToRemoveId];
                 page_table[frame.page_table_idx].valid = false;
@@ -82,6 +90,6 @@ uint32_t ALRU::argMin(){
 			lowestTrackingByte = frame_table[i].tracking_byte;
 		}
 	}
-
+	//std::cout<<"lowest index "<<lowestIndex<<std::endl;
 	return lowestIndex;
 }

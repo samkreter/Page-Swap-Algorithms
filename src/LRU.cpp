@@ -20,7 +20,10 @@ size_t LRU::operator()(const std::string &fname) {
 
             //if there is no page fault, move the page to the end for most recently used
 	    	if(pageIndex != lsuTable.end()){
+	    		std::cout<<"Page Index "<<*pageIndex<<std::endl;
+	    		std::cout<<"value at that index"<<lsuTable
 	    		lsuTable.splice(lsuTable.end(),lsuTable,pageIndex);
+	    		std::cout<<"new end of list "<<lsuTable.back()<<std::endl;
 	    	}
 	    	//we had a page fault
 	    	else{
