@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <list> // yea, I liked vectors better but we these are cool sometimes I guess
-#include <algorithm> //I really like the find method 
+#include <algorithm> //I really like the find method
 //#include <unistd.h>
 //#include <fcntl.h>
 #include <fstream>
@@ -30,6 +30,7 @@ protected:
 
     using page_entry = struct {
        uint32_t idx;
+       uint32_t frameid;
        bool valid;
     };
 

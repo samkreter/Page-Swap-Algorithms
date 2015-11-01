@@ -3,8 +3,8 @@
 page_swap_algorithm::page_swap_algorithm() {
     //create the block store
     init_backing_store();
-    
-    //set temp vars, couldve done this with one but you know it looks more cool with 
+
+    //set temp vars, couldve done this with one but you know it looks more cool with
     //long var names
     uint32_t tempFrameIdCounter = 0;
     uint32_t tempPageIdCount = 0;
@@ -12,8 +12,16 @@ page_swap_algorithm::page_swap_algorithm() {
 
     //init the page table setting the id and setting vaild to true
     for( auto& page : page_table){
+        //the first 512 pages will be vaild and set to the frame table
+        if(tempPageIdCount < 512){
+            page.valid = true;
+        }
+        else{
+            page.valid = false;
+        }
+        //set the page table id
         page.idx = tempPageIdCount++;
-        page.valid = true;
+
         //allocate a block for each page that we have
         if(block_store_allocate(backing_store) == 0){
             //I tried adding the whon whon sound from mario for all the exceptions
@@ -21,20 +29,19 @@ page_swap_algorithm::page_swap_algorithm() {
             throw std::runtime_error("Error when allocating blockstore block");
         }
 
-        //init the block to array of @ signs using hex... 
+        //init the block to array of @ signs using hex...
         //yea I finally learned hex to acii :)
         uint8_t buffer[frame_size] = {0x40};
-
         if(!write_to_back_store(buffer,page.idx)){
             throw std::runtime_error("Error while writing to backstore");
         }
     }
 
-    //init the frame table and reading from the blockstore for the data 
+    //init the frame table and reading from the blockstore for the data
     for( auto& frame : frame_table){
         //initialize the pageId for the frame
         frame.page_table_idx = tempFrameIdCounter++;
-       
+
         //read data from backing store into each frame's data
         if(!read_from_back_store(frame.data, frame.page_table_idx)){
             throw std::runtime_error("Could not read from backing store when initilizing frame table");
@@ -93,14 +100,14 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
     if(!fname.empty()){
         //get file descriptor for bin file
         const int fd = open(fname.c_str(),O_RDONLY);
-        //check file was opened correctly 
+        //check file was opened correctly
         if (fd >= 0) {
             //init vecotre to hold the page requests
             std::vector<uint32_t> pRequests;
             uint32_t numRequests;
-            //try to read in the number of Requests in the file 
+            //try to read in the number of Requests in the file
             if(read(fd,&numRequests,sizeof(uint32_t)) == sizeof(uint32_t)){
-                
+
                 uint32_t buffer;
                 for(uint32_t i = 0;i < numRequests; i++){
                     //init buffer to zero each time
@@ -113,7 +120,7 @@ std::vector<uint32_t> page_swap_algorithm::read_page_requests(const std::string 
                 }
 
                 return pRequests;
-                
+
             }
             throw std::runtime_error("could not read number of blocks");
         }
