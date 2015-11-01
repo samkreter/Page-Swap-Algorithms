@@ -2,6 +2,7 @@
 
 
 size_t LRU::operator()(const std::string &fname) {
+	//param check
 	if(!fname.empty()){
 
         //get the page requests from the file
@@ -13,6 +14,7 @@ size_t LRU::operator()(const std::string &fname) {
         //the number of page faults
 	    size_t faults = 0;
 
+	    //loop through all the requests
 	    for( auto request : pageRequests){
 	    	//check if request is in the frame table bases off the lru table
             //since it will be faster to search
@@ -31,14 +33,26 @@ size_t LRU::operator()(const std::string &fname) {
                 if(*(lsuTable.begin()) > page_table.size() || request > page_table.size()){
                     throw std::runtime_error("Something doesn't match up in the page table");
                 }
+
+                //get a reference to the page who's frame will be removed
 	    		auto& pageToRemove = page_table[*(lsuTable.begin())];
+                
+                //set its valid bit to false
                 pageToRemove.valid = false;
+                //get it's frame id
                 uint32_t frameToRemoveId = pageToRemove.frameId;
 
-                //get the frame based on the index
+                //check just to make sure no indexing mistakes
                 if(frameToRemoveId <= frame_table.size()){
+                    //get the frame to replace the data
                     auto& frame = frame_table[frameToRemoveId];
+                    
+                    //write the data from the frame back to the backing store
+                    if(!write_to_back_store(frame.data,frame.page_table_idx)){
+            			throw std::runtime_error("Error while writing to backstore");
+       				}
 
+       				//set the new frame's page id
                     frame.page_table_idx = request;
 
                     //read data from backing store
