@@ -12,6 +12,7 @@ page_swap_algorithm::page_swap_algorithm() {
 
     //init the page table setting the id and setting vaild to true
     for( auto& page : page_table){
+
         //the first 512 pages will be vaild and set to the frame table
         if(tempPageIdCount < 512){
             page.valid = true;
