@@ -14,13 +14,13 @@ int main(int argc, char **argv) {
     const std::string fname(argv[1]);
 
     try {
-        std::cout << "INIT LRU" << std::endl;
-        LRU lru_test;
+        // std::cout << "INIT LRU" << std::endl;
+        // LRU lru_test;
 
-        std::cout << "RUNNING LRU" << std::endl;
-        uint32_t total_faults = lru_test(fname);
+        // std::cout << "RUNNING LRU" << std::endl;
+        // uint32_t total_faults = lru_test(fname);
 
-        std::cout << "LRU COMPLETE, " << total_faults << " TOTAL PAGE FAULTS." << std::endl;
+        // std::cout << "LRU COMPLETE, " << total_faults << " TOTAL PAGE FAULTS." << std::endl;
     } catch (std::exception &e) {
         std::cerr << "Something broke! " << e.what() << std::endl;
     }

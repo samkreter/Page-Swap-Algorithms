@@ -14,8 +14,10 @@ page_swap_algorithm::page_swap_algorithm() {
     for( auto& page : page_table){
 
         //the first 512 pages will be vaild and set to the frame table
+        //also set up the frameId
         if(tempPageIdCount < 512){
             page.valid = true;
+            page.frameId = tempPageIdCount;
         }
         else{
             page.valid = false;
@@ -47,6 +49,7 @@ page_swap_algorithm::page_swap_algorithm() {
         if(!read_from_back_store(frame.data, frame.page_table_idx)){
             throw std::runtime_error("Could not read from backing store when initilizing frame table");
         }
+        //set up the tracking bytes
         frame.tracking_byte = 0;
         frame.access_bit = 0;
     }

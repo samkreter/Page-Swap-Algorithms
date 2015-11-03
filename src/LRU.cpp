@@ -28,7 +28,12 @@ size_t LRU::operator()(const std::string &fname) {
 	    	else{
 	    		//increment faults tacker
 	    		faults++;
-
+	    		
+	    		//get algo results set up
+	    		page_algorithm_results pResults;
+	    		
+	    		//set the requested page 
+	    		pResults.page_requested = request;
                 //make sure that there wasn't a mistake in the indexing that sends us out of range
                 if(*(lsuTable.begin()) > page_table.size() || request > page_table.size()){
                     throw std::runtime_error("Something doesn't match up in the page table");
@@ -37,10 +42,17 @@ size_t LRU::operator()(const std::string &fname) {
                 //get a reference to the page who's frame will be removed
 	    		auto& pageToRemove = page_table[*(lsuTable.begin())];
                 
+
+                //set the page to remove in results
+	    		pResults.page_replaced = pageToRemove.idx;
+
                 //set its valid bit to false
                 pageToRemove.valid = false;
                 //get it's frame id
                 uint32_t frameToRemoveId = pageToRemove.frameId;
+
+                //set the frame to remove in results
+                pResults.frame_replaced = frameToRemoveId;
 
                 //check just to make sure no indexing mistakes
                 if(frameToRemoveId <= frame_table.size()){
@@ -73,6 +85,8 @@ size_t LRU::operator()(const std::string &fname) {
                     throw std::runtime_error("frame frome page table was not in frametable");
                 }
 
+                //print out the fault information
+                fault_printer(pResults.page_requested,pResults.frame_replaced,pResults.page_replaced);
 	    	}
 	    }
 
@@ -84,6 +98,6 @@ size_t LRU::operator()(const std::string &fname) {
 void LRU::initlruTable(){
     //add all the current frames to the "stack" pull from back with page fault
     for(auto frame : frame_table){
-    	lsuTable.push_front(frame.page_table_idx);
+    	lsuTable.push_back(frame.page_table_idx);
     }
 }

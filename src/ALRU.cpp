@@ -35,8 +35,15 @@ size_t ALRU::operator()(const std::string &fname) {
                 //increment faults tacker
 	    		faults++;
 
+	    		//set up results struct and set request
+	    		page_algorithm_results pResults;
+	    		pResults.page_requested = request;
+
 	    		//get the frame with the lowest access tracking bit
 	    		uint32_t frameToRemoveId = argMin();
+
+	    		//set frame to remove 
+	    		pResults.frame_replaced = frameToRemoveId;
 	    		
 	    		//make sure no indexing mistakes that could crash the program 
 	    		if(frameToRemoveId > frame_table.size()){
@@ -45,6 +52,8 @@ size_t ALRU::operator()(const std::string &fname) {
 	    		//get the frame to be removed
 	    		auto& frame = frame_table[frameToRemoveId];
                 
+	    		//set page to remove
+	    		pResults.page_replaced = frame.page_table_idx;
 
                 //another index checking, probably unnesseary but helps me sleep...I really like sleep
 	    		if(frame.page_table_idx > page_table.size()){
@@ -74,6 +83,8 @@ size_t ALRU::operator()(const std::string &fname) {
                 page_table[request].frameId = frameToRemoveId;
                 page_table[request].valid = true;
 
+                //print out the fault information
+                fault_printer(pResults.page_requested,pResults.frame_replaced,pResults.page_replaced);
 	    	}
 	    	//icrement the clock
 	    	Vclock++;
