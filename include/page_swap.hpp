@@ -5,6 +5,7 @@
 #include <vector>
 #include <list> // yea, I liked vectors better but we these are cool sometimes I guess
 #include <algorithm> //I really like the find method
+#include <bitset> //used to see what binary values we are talking bout
 //#include <unistd.h>
 //#include <fcntl.h>
 #include <fstream>

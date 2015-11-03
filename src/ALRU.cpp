@@ -51,6 +51,7 @@ size_t ALRU::operator()(const std::string &fname) {
 	    		}
 	    		//get the frame to be removed
 	    		auto& frame = frame_table[frameToRemoveId];
+
                 
 	    		//set page to remove
 	    		pResults.page_replaced = frame.page_table_idx;
@@ -103,6 +104,9 @@ void ALRU::adjustTrackingBit(){
 		
 		//mask the tracking byte with the access bit
 		frame.tracking_byte |= frame.access_bit;
+
+		//set access bit back to zero
+		frame.access_bit = 0;
 	}
 }
 
